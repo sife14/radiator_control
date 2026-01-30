@@ -26,8 +26,8 @@ COPY requirements.txt /app/
 COPY templates/ /app/templates/
 COPY static/ /app/static/
 
-# Install Python dependencies
-RUN pip3 install --no-cache-dir -r /app/requirements.txt
+# Install Python dependencies (--break-system-packages needed for PEP 668)
+RUN pip3 install --no-cache-dir --break-system-packages -r /app/requirements.txt
 
 # Create data directory
 RUN mkdir -p /data/radiator_control
