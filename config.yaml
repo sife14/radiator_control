@@ -1,0 +1,125 @@
+# Radiator Control Configuration
+# ================================
+
+# Home Assistant Verbindung
+homeassistant:
+  url: "http://homeassistant.local:8123"
+  token: "YOUR_LONG_LIVED_ACCESS_TOKEN"  # Settings → Long-Lived Access Tokens
+  
+# Entity IDs (anpassen an deine Installation)
+entities:
+  # Silvercrest Thermostat (Zigbee2MQTT)
+  thermostat: "climate.wohnzimmer_thermostat"
+  
+  # Separater Temperatursensor (falls vorhanden, genauer als Thermostat)
+  # Falls nicht vorhanden: null setzen, dann wird Thermostat-Sensor genutzt
+  temp_sensor: "sensor.wohnzimmer_temperatur"
+  
+  # Fensterkontakt
+  window_sensor: "binary_sensor.fenster_wohnzimmer"
+  
+  # Außentemperatur (z.B. von Wetterintegration)
+  outside_temp: "sensor.aussentemperatur"
+  
+  # Optional: Heizungsstatus vom Thermostat (falls verfügbar)
+  heating_state: "sensor.wohnzimmer_thermostat_heating"
+
+# Regelungsparameter
+control:
+  # Toleranzband (keine Aktion wenn innerhalb)
+  temp_tolerance: 0.3
+  
+  # Abtastzeit in Sekunden
+  sample_time: 60
+  
+  # Offset-Grenzen für Fake-Temperatur
+  offset_min: -5.0  # Maximal 5°C weniger melden → maximales Heizen
+  offset_max: 5.0   # Maximal 5°C mehr melden → Heizung aus
+  
+  # HINWEIS: Solltemperatur kommt direkt aus Home Assistant (Thermostat-Setpoint)
+
+# MPC Konfiguration
+mpc:
+  # Prädiktionshorizont in Minuten
+  # ============================================================================
+  # WICHTIG: Der Horizon sollte 2-3x die Zeitkonstante (tau) des Raums sein!
+  # 
+  # Der Heizkörper strahlt nach dem Ausschalten noch lange Wärme ab (Nachheizeffekt).
+  # Ein zu kurzer Horizon führt zu Überschwingen.
+  #
+  # Empfehlungen:
+  #   - Schnelle Systeme (kleine Räume, Konvektoren):     180 min
+  #   - Normale Heizkörper (Standard):                    240 min (empfohlen)
+  #   - Träge Systeme (große Heizkörper, viel Masse):     360 min
+  #   - Sehr träge (alte Gussheizkörper):                 480 min
+  # ============================================================================
+  horizon_minutes: 240
+  
+  # Kontrollhorizont (wie viele Schritte optimiert werden)
+  # Bei dt=5min → 15 Schritte = 75min aktive Optimierung
+  control_horizon: 15
+  
+  # Gewichtung: Komfort vs Energie
+  weight_comfort: 1.0      # Abweichung von Solltemperatur
+  weight_energy: 0.1       # Heizenergie minimieren
+  weight_smoothness: 0.05  # Stellgrößenänderungen minimieren
+  
+  # Constraints
+  temp_min: 18.0  # Mindesttemperatur
+  temp_max: 24.0  # Maximaltemperatur
+
+# Adaptives Modell (RLS)
+model:
+  # Initiale Schätzung Zeitkonstante Raum [Minuten]
+  initial_tau: 120
+  
+  # Initiale Schätzung Heizungsverstärkung
+  initial_k_heater: 0.5
+  
+  # Vergessensfaktor für RLS (0.95-0.99, niedriger = schnellere Anpassung)
+  rls_forgetting_factor: 0.98
+  
+  # Minimale Samples bevor Modell verwendet wird
+  min_samples_for_model: 100
+
+# Experimente / Systemidentifikation
+experiments:
+  # Sprungantwort
+  step_response:
+    offset_step: 3.0      # Sprung um 3°C Offset
+    duration_minutes: 180  # 3 Stunden Beobachtung
+    
+  # PRBS (Pseudo-Random Binary Sequence)
+  prbs:
+    amplitude: 2.0        # ±2°C Offset
+    min_duration: 15      # Minimale Haltedauer pro Zustand [min]
+    total_duration: 480   # Gesamtdauer [min]
+
+# Logging & Datenbank
+database:
+  path: "data/measurements.db"
+  
+  # Wie lange Daten aufbewahren (Tage)
+  retention_days: 365
+
+# Betriebsmodi
+modes:
+  # Aktueller Modus: "control", "experiment", "manual", "window_open"
+  default: "control"
+  
+  # Bei offenem Fenster: Heizung wird komplett ausgeschaltet (Offset auf max)
+  # Modell wird NICHT mit Fenster-offen-Daten trainiert
+
+# Logging
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR
+  file: "logs/radiator_control.log"
+
+# Erweitert: Zeitpläne (optional)
+schedules:
+  enabled: false
+  # Beispiel:
+  # - time: "06:00"
+  #   target_temp: 21.0
+  # - time: "22:00"
+  #   target_temp: 18.0

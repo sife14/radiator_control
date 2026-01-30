@@ -1,0 +1,111 @@
+# Home Assistant Add-on Configuration
+# https://developers.home-assistant.io/docs/add-ons/configuration
+
+name: "Radiator Control MPC"
+description: "Intelligente Heizungssteuerung mit Model Predictive Control und adaptivem Modell"
+version: "1.1.0"
+slug: "radiator_control"
+init: false
+arch:
+  - amd64
+  - aarch64
+  - armv7
+homeassistant_api: true
+hassio_api: true
+ingress: true
+ingress_port: 5000
+ingress_entry: /
+panel_icon: "mdi:radiator"
+panel_title: "Radiator Control"
+
+# Optionen die in der HA-UI konfiguriert werden
+options:
+  # === Entities ===
+  thermostat_entity: "climate.wohnzimmer"
+  temp_sensor_entity: "sensor.wohnzimmer_temperatur"
+  window_sensor_entity: ""
+  outside_temp_entity: "sensor.aussentemperatur"
+  temp_calibration_entity: ""
+  
+  # === Fenster-Verhalten ===
+  window_action: "turn_off"
+  window_off_delay_seconds: 30
+  
+  # === MPC Parameter ===
+  mpc_horizon_minutes: 240
+  mpc_control_horizon: 15
+  mpc_weight_comfort: 1.0
+  mpc_weight_energy: 0.1
+  mpc_weight_smoothness: 0.05
+  
+  # === Control Parameter ===
+  offset_min: -5.0
+  offset_max: 5.0
+  sample_time_seconds: 60
+  
+  # === Modell Parameter ===
+  model_initial_tau: 120
+  model_initial_k_heater: 0.5
+  model_forgetting_factor: 0.98
+  
+  # === Climate Entity (für better-thermostat-ui-card) ===
+  create_climate_entity: true
+  climate_entity_name: "Radiator Control"
+  
+  # === Logging ===
+  log_level: "info"
+
+schema:
+  # Entities
+  thermostat_entity: str
+  temp_sensor_entity: str
+  window_sensor_entity: str?
+  outside_temp_entity: str?
+  temp_calibration_entity: str?
+  
+  # Fenster
+  window_action: list(turn_off|offset)
+  window_off_delay_seconds: int(0,300)
+  
+  # MPC
+  mpc_horizon_minutes: int(60,480)
+  mpc_control_horizon: int(5,40)
+  mpc_weight_comfort: float(0.1,10.0)
+  mpc_weight_energy: float(0.0,5.0)
+  mpc_weight_smoothness: float(0.0,1.0)
+  
+  # Control
+  offset_min: float(-10.0,0.0)
+  offset_max: float(0.0,10.0)
+  sample_time_seconds: int(30,300)
+  
+  # Model
+  model_initial_tau: int(30,300)
+  model_initial_k_heater: float(0.1,2.0)
+  model_forgetting_factor: float(0.9,0.999)
+  
+  # Climate Entity
+  create_climate_entity: bool
+  climate_entity_name: str
+  
+  # Logging
+  log_level: list(debug|info|warning|error)
+
+# Ports
+ports:
+  5000/tcp: null
+
+ports_description:
+  5000/tcp: "Web UI (nur über Ingress)"
+
+# Persistent data
+map:
+  - share:rw
+  - ssl:ro
+
+# Startup
+startup: services
+boot: auto
+
+# URLs
+url: "https://github.com/simonreich/radiator_control"

@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  radiator-control:
+    build: .
+    container_name: radiator_control
+    restart: unless-stopped
+    
+    volumes:
+      # Persistente Daten
+      - ./data:/app/data
+      - ./logs:/app/logs
+      
+      # Konfiguration (kann außerhalb angepasst werden)
+      - ./config.yaml:/app/config.yaml:ro
+    
+    environment:
+      - TZ=Europe/Berlin
+      
+      # Optional: Config via Environment Variables
+      # - HA_URL=http://homeassistant.local:8123
+      # - HA_TOKEN=your_token_here
+    
+    # Netzwerk: Host-Modus für einfachen Zugriff auf Home Assistant
+    # Alternative: Bridge mit expliziten Ports
+    network_mode: host
+    
+    # Oder mit Bridge-Netzwerk:
+    # networks:
+    #   - home_network
+    # ports:
+    #   - "8080:8080"  # Falls Web-UI implementiert wird
+    
+    # Healthcheck
+    healthcheck:
+      test: ["CMD", "python", "-c", "import sys; sys.exit(0)"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+# networks:
+#   home_network:
+#     external: true

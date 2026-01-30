@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Radiator Control MPC</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><text y='20' font-size='20'>🌡️</text></svg>">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🌡️ Radiator Control</h1>
+            <div class="header-right">
+                <span id="status-badge" class="badge">Idle</span>
+                <button class="btn-icon" onclick="toggleSettings()" title="Einstellungen">⚙️</button>
+            </div>
+        </header>
+
+        <!-- Status Cards -->
+        <section class="cards">
+            <div class="card" id="card-room-temp">
+                <div class="card-icon">🏠</div>
+                <div class="card-content">
+                    <span class="card-label">Raumtemperatur</span>
+                    <span class="card-value" id="room-temp">--°C</span>
+                </div>
+            </div>
+            <div class="card" id="card-target-temp">
+                <div class="card-icon">🎯</div>
+                <div class="card-content">
+                    <span class="card-label">Solltemperatur</span>
+                    <span class="card-value" id="target-temp">--°C</span>
+                </div>
+            </div>
+            <div class="card" id="card-offset">
+                <div class="card-icon">📊</div>
+                <div class="card-content">
+                    <span class="card-label">Offset</span>
+                    <span class="card-value" id="offset">--°C</span>
+                </div>
+            </div>
+            <div class="card" id="card-outside-temp">
+                <div class="card-icon">🌤️</div>
+                <div class="card-content">
+                    <span class="card-label">Außentemperatur</span>
+                    <span class="card-value" id="outside-temp">--°C</span>
+                </div>
+            </div>
+            <div class="card" id="card-hvac-mode">
+                <div class="card-icon">🔥</div>
+                <div class="card-content">
+                    <span class="card-label">Thermostat</span>
+                    <span class="card-value" id="hvac-mode">--</span>
+                </div>
+            </div>
+            <div class="card" id="card-window">
+                <div class="card-icon">🪟</div>
+                <div class="card-content">
+                    <span class="card-label">Fenster</span>
+                    <span class="card-value" id="window-state">--</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quick Actions -->
+        <section class="quick-actions">
+            <h2>Schnellaktionen</h2>
+            <div class="action-grid">
+                <button id="btn-start" class="btn btn-success btn-large" onclick="startControl()">
+                    ▶️ Regelung starten
+                </button>
+                <button id="btn-stop" class="btn btn-danger btn-large" onclick="stopControl()" disabled>
+                    ⏹️ Regelung stoppen
+                </button>
+                <button class="btn btn-secondary" onclick="turnOnThermostat()">
+                    🔥 Thermostat AN
+                </button>
+                <button class="btn btn-secondary" onclick="turnOffThermostat()">
+                    ❄️ Thermostat AUS
+                </button>
+            </div>
+        </section>
+
+        <!-- Live Graph -->
+        <section class="graph-section">
+            <h2>📈 Temperaturverlauf (24h)</h2>
+            <div class="graph-container">
+                <canvas id="temp-graph"></canvas>
+            </div>
+            <div class="graph-legend">
+                <span class="legend-item"><span class="dot room"></span> Raum</span>
+                <span class="legend-item"><span class="dot target"></span> Soll</span>
+                <span class="legend-item"><span class="dot outside"></span> Außen</span>
+            </div>
+        </section>
+
+        <!-- Detailed Info -->
+        <section class="info-section">
+            <h2>ℹ️ Detaillierte Informationen</h2>
+            <div class="info-grid">
+                <div class="info-box">
+                    <h3>Aktueller Zustand</h3>
+                    <table class="info-table">
+                        <tr><td>Modus</td><td id="info-mode">--</td></tr>
+                        <tr><td>HVAC Modus</td><td id="info-hvac">--</td></tr>
+                        <tr><td>Heizung aktiv</td><td id="info-heating">--</td></tr>
+                        <tr><td>Fenster</td><td id="info-window">--</td></tr>
+                        <tr><td>Letztes Update</td><td id="info-update">--</td></tr>
+                    </table>
+                </div>
+                <div class="info-box">
+                    <h3>Modellparameter</h3>
+                    <table class="info-table">
+                        <tr><td>τ (Zeitkonstante)</td><td id="info-tau">-- min</td></tr>
+                        <tr><td>k_heater</td><td id="info-k-heater">--</td></tr>
+                        <tr><td>k_outside</td><td id="info-k-outside">--</td></tr>
+                        <tr><td>Modell-RMSE</td><td id="info-model-rmse">-- °C</td></tr>
+                        <tr><td>Updates</td><td id="info-updates">--</td></tr>
+                    </table>
+                </div>
+                <div class="info-box">
+                    <h3>Performance (7 Tage)</h3>
+                    <table class="info-table">
+                        <tr><td>RMSE</td><td id="info-perf-rmse">-- °C</td></tr>
+                        <tr><td>MAE</td><td id="info-perf-mae">-- °C</td></tr>
+                        <tr><td>Komfort-Quote</td><td id="info-perf-comfort">--%</td></tr>
+                        <tr><td>Trend</td><td id="info-perf-trend">--</td></tr>
+                        <tr><td>Messungen</td><td id="info-perf-samples">--</td></tr>
+                    </table>
+                </div>
+                <div class="info-box">
+                    <h3>Entities</h3>
+                    <table class="info-table">
+                        <tr><td>Thermostat</td><td id="info-entity-thermo" class="entity-id">--</td></tr>
+                        <tr><td>Temp-Sensor</td><td id="info-entity-temp" class="entity-id">--</td></tr>
+                        <tr><td>Fenster</td><td id="info-entity-window" class="entity-id">--</td></tr>
+                        <tr><td>Außentemp</td><td id="info-entity-outside" class="entity-id">--</td></tr>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- Experiments -->
+        <section class="experiments">
+            <h2>🔬 Systemidentifikation</h2>
+            <p class="hint">Führe ein Experiment durch, um das Raummodell zu kalibrieren. Fenster während der Experimente geschlossen halten!</p>
+            
+            <div class="experiment-cards">
+                <div class="experiment-card">
+                    <h3>Sprungantwort</h3>
+                    <p class="duration">⏱️ ~2.5 Stunden</p>
+                    <p class="small">Bestimmt Zeitkonstante τ und Heizungswirkung k_heater. Ideal für den ersten Test.</p>
+                    <button class="btn btn-primary" onclick="startExperiment('step')" id="btn-exp-step">
+                        Starten
+                    </button>
+                </div>
+                <div class="experiment-card">
+                    <h3>PRBS-Test</h3>
+                    <p class="duration">⏱️ ~4 Stunden</p>
+                    <p class="small">Pseudo-Random Binary Sequence. Robustere Identifikation, ideal für ML-Training.</p>
+                    <button class="btn btn-primary" onclick="startExperiment('prbs')" id="btn-exp-prbs">
+                        Starten
+                    </button>
+                </div>
+                <div class="experiment-card">
+                    <h3>Relay-Feedback</h3>
+                    <p class="duration">⏱️ ~2-3 Stunden</p>
+                    <p class="small">Ziegler-Nichols Autotuning. Berechnet optimale PID-Parameter.</p>
+                    <button class="btn btn-primary" onclick="startExperiment('relay')" id="btn-exp-relay">
+                        Starten
+                    </button>
+                </div>
+            </div>
+            
+            <div id="experiment-progress" class="progress-container" style="display: none;">
+                <h3 id="experiment-name">Experiment läuft...</h3>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+                </div>
+                <div class="progress-info">
+                    <span id="progress-text">0%</span>
+                    <span id="progress-time">Verbleibend: --</span>
+                </div>
+                <button class="btn btn-danger btn-sm" onclick="stopExperiment()">
+                    ❌ Abbrechen
+                </button>
+            </div>
+        </section>
+
+        <!-- Statistics Table -->
+        <section class="statistics">
+            <h2>📊 Tägliche Statistiken</h2>
+            <div class="table-container">
+                <table class="stats-table" id="daily-stats">
+                    <thead>
+                        <tr>
+                            <th>Datum</th>
+                            <th>RMSE</th>
+                            <th>MAE</th>
+                            <th>Komfort</th>
+                            <th>Samples</th>
+                            <th>Ø Offset</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td colspan="6">Lade Daten...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Past Experiments -->
+        <section class="past-experiments">
+            <h2>📋 Vergangene Experimente</h2>
+            <div id="experiments-list">
+                <p>Lade...</p>
+            </div>
+        </section>
+
+        <!-- Settings Panel (hidden by default) -->
+        <section id="settings-panel" class="settings-panel" style="display: none;">
+            <h2>⚙️ Einstellungen</h2>
+            
+            <div class="settings-group">
+                <h3>MPC Parameter</h3>
+                <div class="setting-row">
+                    <label>Horizont (Minuten)</label>
+                    <input type="number" id="set-horizon" min="30" max="360" value="120">
+                </div>
+                <div class="setting-row">
+                    <label>Komfort-Gewicht</label>
+                    <input type="number" id="set-weight-comfort" min="0.1" max="10" step="0.1" value="1.0">
+                </div>
+                <div class="setting-row">
+                    <label>Energie-Gewicht</label>
+                    <input type="number" id="set-weight-energy" min="0" max="5" step="0.05" value="0.1">
+                </div>
+                <div class="setting-row">
+                    <label>Glätte-Gewicht</label>
+                    <input type="number" id="set-weight-smooth" min="0" max="1" step="0.01" value="0.05">
+                </div>
+            </div>
+            
+            <div class="settings-group">
+                <h3>Offset-Grenzen</h3>
+                <div class="setting-row">
+                    <label>Minimum (mehr heizen)</label>
+                    <input type="number" id="set-offset-min" min="-10" max="0" step="0.5" value="-5">
+                </div>
+                <div class="setting-row">
+                    <label>Maximum (weniger heizen)</label>
+                    <input type="number" id="set-offset-max" min="0" max="10" step="0.5" value="5">
+                </div>
+            </div>
+            
+            <div class="settings-group">
+                <h3>Fenster-Verhalten</h3>
+                <div class="setting-row">
+                    <label>Bei offenem Fenster</label>
+                    <select id="set-window-action">
+                        <option value="turn_off">Thermostat ausschalten</option>
+                        <option value="offset">Nur Offset maximieren</option>
+                    </select>
+                </div>
+                <div class="setting-row">
+                    <label>Verzögerung (Sekunden)</label>
+                    <input type="number" id="set-window-delay" min="0" max="300" value="30">
+                </div>
+            </div>
+            
+            <div class="settings-group">
+                <h3>Modell</h3>
+                <div class="setting-row">
+                    <label>Vergessens-Faktor (RLS)</label>
+                    <input type="number" id="set-forgetting" min="0.9" max="0.999" step="0.001" value="0.98">
+                </div>
+                <button class="btn btn-warning" onclick="resetModel()">
+                    🔄 Modell zurücksetzen
+                </button>
+            </div>
+            
+            <div class="settings-actions">
+                <button class="btn btn-success" onclick="saveSettings()">💾 Speichern</button>
+                <button class="btn btn-secondary" onclick="toggleSettings()">Schließen</button>
+            </div>
+        </section>
+
+        <!-- Climate Entity Info -->
+        <section class="climate-entity-info">
+            <h2>🎛️ Integration mit better-thermostat-ui-card</h2>
+            <p>Dieses Add-on erstellt eine Climate-Entity in Home Assistant:</p>
+            <div class="code-block">
+                <code id="climate-entity-id">climate.radiator_control</code>
+                <button class="btn-copy" onclick="copyEntityId()">📋</button>
+            </div>
+            <p class="hint">Verwende diese Entity in der <a href="https://github.com/KartoffelToby/better-thermostat-ui-card" target="_blank">better-thermostat-ui-card</a> für eine schöne Steuerung.</p>
+            
+            <details>
+                <summary>Beispiel-Konfiguration für Lovelace</summary>
+                <pre class="yaml-code">
+type: custom:better-thermostat-ui-card
+entity: climate.radiator_control
+eco_temperature: 18
+disable_window: true
+set_current_as_main: true
+                </pre>
+            </details>
+        </section>
+
+        <footer>
+            <p>Radiator Control MPC v1.1.0 | 
+               <a href="https://github.com/simonreich/radiator_control" target="_blank">GitHub</a>
+            </p>
+            <p class="small">Letzte Aktualisierung: <span id="last-update-time">--</span></p>
+        </footer>
+    </div>
+
+    <!-- Simple Chart Library (inline) -->
+    <script src="/static/app.js"></script>
+</body>
+</html>

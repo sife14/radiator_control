@@ -1,0 +1,72 @@
+[tool.poetry]
+name = "radiator-control"
+version = "0.1.0"
+description = "MPC-basierte Heizungsregelung mit adaptivem Modell für Home Assistant"
+authors = ["Simon"]
+readme = "README.md"
+packages = [{include = "src"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
+# Home Assistant Integration
+aiohttp = "^3.9.0"
+websockets = "^12.0"
+
+# Numerik & Optimierung
+numpy = "^1.24.0"
+scipy = "^1.11.0"
+cvxpy = "^1.4.0"
+
+# Datenbank & Datenhandling
+pandas = "^2.0.0"
+sqlalchemy = "^2.0.0"
+
+# Konfiguration
+pyyaml = "^6.0.0"
+python-dotenv = "^1.0.0"
+
+# Plotting & Visualisierung
+matplotlib = "^3.8.0"
+plotly = "^5.18.0"
+
+# Async Scheduling
+apscheduler = "^3.10.0"
+
+# Logging
+structlog = "^23.0.0"
+
+[tool.poetry.group.ml.dependencies]
+# Machine Learning / KI Training
+gymnasium = "^0.29.0"
+stable-baselines3 = "^2.2.0"
+torch = "^2.1.0"
+scikit-learn = "^1.3.0"
+tensorboard = "^2.15.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.4.0"
+pytest-asyncio = "^0.21.0"
+black = "^23.0.0"
+mypy = "^1.7.0"
+ruff = "^0.1.0"
+
+[tool.poetry.scripts]
+radiator-control = "main:main"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 100
+target-version = ['py310', 'py311']
+
+[tool.ruff]
+line-length = 100
+select = ["E", "F", "I", "N", "W"]
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_ignores = true
