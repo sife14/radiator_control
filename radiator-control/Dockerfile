@@ -18,13 +18,13 @@ RUN apk add --no-cache \
 # Set working directory
 WORKDIR /app
 
-# Copy application
-COPY radiator-control/rootfs /
+# Copy application - paths relative to add-on folder (build context)
+COPY rootfs /
 COPY src/ /app/src/
 COPY main.py /app/
-COPY radiator-control/requirements.txt /app/
-COPY radiator-control/templates/ /app/templates/
-COPY radiator-control/static/ /app/static/
+COPY requirements.txt /app/
+COPY templates/ /app/templates/
+COPY static/ /app/static/
 
 # Install Python dependencies
 RUN pip3 install --no-cache-dir -r /app/requirements.txt
