@@ -74,10 +74,10 @@ schema:
   mpc_weight_energy: float(0.0,5.0)
   mpc_weight_smoothness: float(0.0,1.0)
   
-  # Control - Note: HA schema doesn't support negative floats, so we use int
-  # The actual values will be treated as floats in the code
-  offset_min: int(-10,0)
-  offset_max: int(0,10)
+  # Control - HA schema doesn't support negative numbers in ranges!
+  # Using simple int type, validation happens in the code
+  offset_min: int
+  offset_max: int
   sample_time_seconds: int(30,300)
   
   # Model
