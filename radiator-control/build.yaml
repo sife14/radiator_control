@@ -1,10 +1,7 @@
-{
-  "image": "ghcr.io/{repository}/radiator-control-{arch}",
-  "build_from": {
-    "amd64": "ghcr.io/home-assistant/amd64-base:latest",
-    "aarch64": "ghcr.io/home-assistant/aarch64-base:latest",
-    "armv7": "ghcr.io/home-assistant/armv7-base:latest"
-  },
-  "squash": false,
-  "args": {}
-}
+# Build configuration for Home Assistant Add-on
+build_from:
+  amd64: ghcr.io/home-assistant/amd64-base:latest
+  aarch64: ghcr.io/home-assistant/aarch64-base:latest
+  armv7: ghcr.io/home-assistant/armv7-base:latest
+squash: false
+args: {}
