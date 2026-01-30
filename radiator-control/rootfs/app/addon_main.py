@@ -40,8 +40,8 @@ logger = logging.getLogger(__name__)
 
 # Flask App
 app = Flask(__name__, 
-            template_folder='/app/addon/templates',
-            static_folder='/app/addon/static')
+            template_folder='/app/templates',
+            static_folder='/app/static')
 
 # Globale Referenzen
 controller = None

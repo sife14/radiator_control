@@ -6,9 +6,9 @@ Dieses Repository enthält das Radiator Control MPC Add-on für Home Assistant.
 
 ### Methode 1: Als lokales Add-on (Entwicklung)
 
-1. Kopiere den `addon/` Ordner nach `/addons/radiator_control/` auf deinem Home Assistant System:
+1. Kopiere den `radiator-control/` Ordner nach `/addons/radiator-control/` auf deinem Home Assistant System:
    ```bash
-   scp -r addon/ root@homeassistant.local:/addons/radiator_control/
+   scp -r radiator-control/ root@homeassistant.local:/addons/radiator-control/
    ```
 
 2. In Home Assistant:

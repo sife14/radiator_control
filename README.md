@@ -439,7 +439,7 @@ radiator_control/
 │   ├── mpc_controller.py # MPC Optimierung (CVXPY/OSQP)
 │   ├── experiments.py    # Interaktive Systemidentifikation
 │   └── utils.py          # Hilfsfunktionen
-├── addon/                # Home Assistant Add-on
+├── radiator-control/        # Home Assistant Add-on
 │   ├── config.yaml       # Add-on Manifest
 │   ├── Dockerfile        # Container für HA
 │   ├── DOCS.md           # Add-on Dokumentation

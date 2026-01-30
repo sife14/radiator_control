@@ -4,7 +4,7 @@
 name: "Radiator Control MPC"
 description: "Intelligente Heizungssteuerung mit Model Predictive Control und adaptivem Modell"
 version: "1.1.0"
-slug: "radiator_control"
+slug: "radiator-control"
 init: false
 arch:
   - amd64
