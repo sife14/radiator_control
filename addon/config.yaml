@@ -108,4 +108,4 @@ startup: services
 boot: auto
 
 # URLs
-url: "https://github.com/simonreich/radiator_control"
+url: "https://github.com/sife14/radiator_control"

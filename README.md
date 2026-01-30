@@ -8,7 +8,7 @@
 
 1. **Repository hinzufügen:**
    - Einstellungen → Add-ons → Add-on Store → ⋮ → Repositories
-   - URL: `https://github.com/simonreich/radiator_control`
+   - URL: `https://github.com/sife14/radiator_control`
 
 2. **Add-on installieren:**
    - "Radiator Control MPC" suchen und installieren

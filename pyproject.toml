@@ -2,7 +2,7 @@
 name = "radiator-control"
 version = "0.1.0"
 description = "MPC-basierte Heizungsregelung mit adaptivem Modell für Home Assistant"
-authors = ["Simon"]
+authors = ["Simon Müller"]
 readme = "README.md"
 packages = [{include = "src"}]
 
