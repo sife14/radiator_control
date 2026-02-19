@@ -4,22 +4,24 @@
 
 ## 🚀 Installation
 
-### Option A: Home Assistant Add-on (empfohlen)
+### Option A: HACS (empfohlen)
 
-1. **Repository hinzufügen:**
-   - Einstellungen → Add-ons → Add-on Store → ⋮ → Repositories
-   - URL: `https://github.com/sife14/radiator_control`
+[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=sife14&repository=radiator_control&category=integration)
 
-2. **Add-on installieren:**
-   - "Radiator Control MPC" suchen und installieren
-   - In der Konfiguration die Entities eintragen
-   - Starten!
+1. **HACS öffnen** → Integrationen → ⋮ (oben rechts) → **Benutzerdefinierte Repositories**
+2. URL: `https://github.com/sife14/radiator_control` | Kategorie: **Integration**
+3. "Radiator Control MPC" suchen und **herunterladen**
+4. **Home Assistant neustarten**
+5. Einstellungen → Geräte & Dienste → **Integration hinzufügen** → "Radiator Control" suchen
+6. Thermostat, Sensoren und Calibration-Entity auswählen → Fertig!
 
-3. **Web-UI öffnen:**
-   - Das Add-on erscheint in der Seitenleiste
-   - Experimente und Statistiken direkt in Home Assistant
+### Option B: Manuelle Installation
 
-### Option B: Standalone (CLI)
+1. `custom_components/radiator_control/` in dein HA `config/custom_components/` kopieren
+2. Home Assistant neustarten
+3. Einstellungen → Geräte & Dienste → Integration hinzufügen → "Radiator Control"
+
+### Option C: Standalone (CLI)
 
 ```bash
 # 1. Setup
@@ -41,6 +43,13 @@ poetry run python main.py
 # 6. Nach ein paar Tagen: Performance prüfen
 poetry run python main.py --stats
 ```
+
+### Voraussetzungen
+
+- Home Assistant 2024.1 oder neuer
+- Ein Zigbee2MQTT-kompatibles Thermostat mit **Temperature Calibration** Entity (z.B. TuYa TS0601)
+- Ein separater Temperatursensor (z.B. Aqara WSDCGQ11LM)
+- Optional: Außentemperatur-Sensor, Fenster-Sensor (binary_sensor)
 
 ## 🎯 Was macht dieses Projekt?
 
