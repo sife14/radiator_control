@@ -1,0 +1,45 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Radiator Control MPC",
+        "description": "Intelligente Heizungssteuerung mit Model Predictive Control einrichten.",
+        "data": {
+          "thermostat_entity": "Thermostat (Climate-Entity)",
+          "temp_sensor_entity": "Temperatursensor (genauer als Thermostat)",
+          "window_sensor_entity": "Fensterkontakt (optional)",
+          "outside_temp_entity": "Außentemperatursensor (optional)",
+          "temp_calibration_entity": "Temperatur-Kalibrierungs-Entity (optional)"
+        }
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Radiator Control Einstellungen",
+        "description": "MPC- und Regelungsparameter anpassen.",
+        "data": {
+          "mpc_horizon_minutes": "Vorhersagehorizont (Minuten)",
+          "mpc_weight_comfort": "Komfort-Gewichtung",
+          "mpc_weight_energy": "Energie-Gewichtung",
+          "mpc_weight_smoothness": "Glätte-Gewichtung",
+          "offset_min": "Minimaler Offset (°C)",
+          "offset_max": "Maximaler Offset (°C)",
+          "sample_time_seconds": "Abtastzeit (Sekunden)",
+          "window_action": "Aktion bei offenem Fenster",
+          "window_off_delay_seconds": "Verzögerung Fenster-Aus (Sekunden)",
+          "model_forgetting_factor": "Modell-Vergessensrate (RLS)"
+        }
+      }
+    }
+  },
+  "selector": {
+    "window_action": {
+      "options": {
+        "turn_off": "Thermostat ausschalten",
+        "offset": "Nur Offset maximieren"
+      }
+    }
+  }
+}
