@@ -1,0 +1,15 @@
+{
+  "domain": "radiator_control",
+  "name": "Radiator Control MPC",
+  "codeowners": [],
+  "config_flow": true,
+  "dependencies": [],
+  "documentation": "https://github.com/sife14/radiator_control",
+  "iot_class": "local_polling",
+  "issue_tracker": "https://github.com/sife14/radiator_control/issues",
+  "requirements": [
+    "cvxpy>=1.3.0",
+    "osqp>=0.6.0"
+  ],
+  "version": "2.0.0"
+}

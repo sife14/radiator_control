@@ -1,0 +1,45 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Radiator Control MPC",
+        "description": "Set up intelligent radiator control with Model Predictive Control.",
+        "data": {
+          "thermostat_entity": "Thermostat (climate entity)",
+          "temp_sensor_entity": "Temperature sensor (more accurate than thermostat)",
+          "window_sensor_entity": "Window contact sensor (optional)",
+          "outside_temp_entity": "Outside temperature sensor (optional)",
+          "temp_calibration_entity": "Temperature calibration entity (optional)"
+        }
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Radiator Control Settings",
+        "description": "Adjust MPC and control parameters.",
+        "data": {
+          "mpc_horizon_minutes": "Prediction horizon (minutes)",
+          "mpc_weight_comfort": "Comfort weight",
+          "mpc_weight_energy": "Energy weight",
+          "mpc_weight_smoothness": "Smoothness weight",
+          "offset_min": "Minimum offset (°C)",
+          "offset_max": "Maximum offset (°C)",
+          "sample_time_seconds": "Sample time (seconds)",
+          "window_action": "Window open action",
+          "window_off_delay_seconds": "Window off delay (seconds)",
+          "model_forgetting_factor": "Model forgetting factor (RLS)"
+        }
+      }
+    }
+  },
+  "selector": {
+    "window_action": {
+      "options": {
+        "turn_off": "Turn off thermostat",
+        "offset": "Maximize offset only"
+      }
+    }
+  }
+}
